@@ -4,7 +4,7 @@ import { Outbox } from "../models/outbox.model.js";
 import { randomUUID } from "crypto";
 
 export const addOrders = async (req, res) => {
-  const { orders } = req.body;
+  const { orders,failureRate} = req.body;
 
   const transaction = await sequelize.transaction();
 
@@ -29,6 +29,7 @@ export const addOrders = async (req, res) => {
           id: randomUUID(),
           payload: order,
           status: "PENDING",
+          failureRate:req.body.failureRate
         },
         { transaction }
       );
