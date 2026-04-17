@@ -1,5 +1,5 @@
 import { pool } from "../db/index.js";
-import { producer } from "./kafka.js";
+import { producer } from "../kafka/kafka.js";
 
 const BATCH_SIZE = process.env.BATCH_SIZE;
 const POLL_INTERVAL = process.env.POLL_INTERVAL;

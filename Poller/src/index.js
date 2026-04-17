@@ -1,9 +1,9 @@
 import connectDB from "./db/index.js";
 import dotenv from "dotenv";
 import { app } from "./app.js";
-import { startPoller } from "./utils/poller.js";
-import { startCleanupJob } from "./utils/cleanup.js";
-import { connectKafka } from "./utils/kafka.js";
+import { startPoller } from "./poller/poller.js";
+import { startCleanupJob } from "./cleanup/cleanup.js";
+import { connectKafka } from "./kafka/kafka.js";
 
 dotenv.config({
   path: "./.env",
