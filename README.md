@@ -18,10 +18,12 @@ Nomenclature
    - (Can get Schema from Prisma Studio)
   
 4. Poller 
-   Container (Todo)
-
-
-
+   - Transactional Outbox Pattern : 
+        1.  poller_1_transactional_outbox-backend-1
+        2.  poller_2_transactional_outbox-backend-1
+   - Listen to Yourself Pattern :
+        1.  
+       
 
 
 Commands

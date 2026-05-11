@@ -1,8 +1,8 @@
 import { pool } from "../db/index.js";
 import { producer } from "../kafka/kafka.js";
 
-const BATCH_SIZE = process.env.BATCH_SIZE;
-const POLL_INTERVAL = process.env.POLL_INTERVAL;
+const BATCH_SIZE = Number(process.env.BATCH_SIZE);
+const POLL_INTERVAL = Number(process.env.POLL_INTERVAL);
 
   export async function startPoller() 
   {
@@ -15,7 +15,7 @@ const POLL_INTERVAL = process.env.POLL_INTERVAL;
             await client.query("BEGIN");
             const res = await client.query(`
                 SELECT *
-                FROM "Outbox"
+                FROM "Outbox_Transactional_Outbox"
                 WHERE status = 'PENDING'
                 ORDER BY "createdAt"
                 LIMIT $1
@@ -34,7 +34,7 @@ const POLL_INTERVAL = process.env.POLL_INTERVAL;
                 console.log("\n\n");
 
                 await client.query(`
-                      UPDATE "Outbox"
+                      UPDATE "Outbox_Transactional_Outbox"
                       SET status = 'PROCESSING', "updatedAt" = NOW()
                       WHERE id = $1
                     `, [event.id]
@@ -54,7 +54,7 @@ const POLL_INTERVAL = process.env.POLL_INTERVAL;
                 {
                     console.log("Unexpected error:", err.message);
                     await pool.query(`
-                    UPDATE "Outbox"
+                    UPDATE "Outbox_Transactional_Outbox"
                     SET status = 'PENDING',
                         attempts = attempts + 1,
                         "lastError" = $1,
@@ -80,6 +80,7 @@ const POLL_INTERVAL = process.env.POLL_INTERVAL;
   {
     console.log("\n");
     console.log(" Processing:", event.id);
+
     const random = Math.random();
 
     if (random < event.failureRate) 
@@ -87,7 +88,7 @@ const POLL_INTERVAL = process.env.POLL_INTERVAL;
         console.log(" Failure Publishing Event (Simulation) : ",event.id);
         console.log("\n");
         await pool.query(`
-          UPDATE "Outbox"
+          UPDATE "Outbox_Transactional_Outbox"
           SET status = 'PENDING',
               attempts = attempts + 1,
               "updatedAt" = NOW()
@@ -115,7 +116,7 @@ const POLL_INTERVAL = process.env.POLL_INTERVAL;
       console.log("Event sent to Kafka:", event.id);
 
       await pool.query(`
-        UPDATE "Outbox"
+        UPDATE "Outbox_Transactional_Outbox"
         SET status = 'SENT',
             "processedAt" = NOW(),
             "updatedAt" = NOW()
@@ -128,7 +129,7 @@ const POLL_INTERVAL = process.env.POLL_INTERVAL;
       console.error("Kafka publish failed:", err.message);
 
       await pool.query(`
-        UPDATE "Outbox"
+        UPDATE "Outbox_Transactional_Outbox"
         SET status = 'PENDING',
             attempts = attempts + 1,
             "lastError" = $1,
