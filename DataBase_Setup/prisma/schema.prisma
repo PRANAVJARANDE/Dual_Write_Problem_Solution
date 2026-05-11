@@ -29,3 +29,17 @@ model Outbox {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 }
+
+model Outbox_Listen_To_yourself {
+  id             String   @id @default(cuid())
+  payload        Json
+  status         String
+  simulationMode String   @default("PROBABILISTIC")
+  failureRate    Float    @default(0)
+  requestIndex   Int?
+  attempts       Int      @default(0)
+  lastError      String?
+  processedAt    DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}

@@ -82,7 +82,7 @@ const POLL_INTERVAL = process.env.POLL_INTERVAL;
     console.log(" Processing:", event.id);
     const random = Math.random();
 
-    if (random < 0.90) 
+    if (random < event.failureRate) 
     {
         console.log(" Failure Publishing Event (Simulation) : ",event.id);
         console.log("\n");

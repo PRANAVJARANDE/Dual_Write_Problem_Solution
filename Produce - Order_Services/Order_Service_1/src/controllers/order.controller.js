@@ -1,9 +1,10 @@
 import { sequelize } from "../db/sequelize.js";
 import { Order } from "../models/order.model.js";
-import { Outbox } from "../models/outbox.model.js";
+import { Outbox} from "../models/outbox.model.js";
+import {Outbox_Listen_To_yourself} from "../models/outbox_ltu.js"
 import { randomUUID } from "crypto";
 
-export const addOrders = async (req, res) => {
+export const addOrders_Transactional_Outbox_Pattern = async (req, res) => {
   const { orders,failureRate} = req.body;
 
   const transaction = await sequelize.transaction();
@@ -35,6 +36,38 @@ export const addOrders = async (req, res) => {
       );
 
       result.push(newOrder);
+    }
+
+    await transaction.commit();
+
+    res.status(201).json(result);
+  } catch (err) {
+    await transaction.rollback();
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
+export const addOrders_Listen_To_Yourself = async (req, res) => {
+  const { orders,failureRate} = req.body;
+
+  const transaction = await sequelize.transaction();
+
+  try {
+    const result = [];
+
+    for (let order of orders) {
+      const ev= await Outbox_Listen_To_yourself.create(
+        {
+          id: randomUUID(),
+          payload: order,
+          status: "PENDING",
+          failureRate:req.body.failureRate
+        },
+        { transaction }
+      );
+
+      result.push(ev);
     }
 
     await transaction.commit();
