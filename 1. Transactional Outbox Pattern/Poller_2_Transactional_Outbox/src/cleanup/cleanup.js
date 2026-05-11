@@ -10,7 +10,7 @@ export function startCleanupJob() {
     {
       console.log("Running cleanup...");
       const result = await pool.query(`
-        DELETE FROM "Outbox"
+        DELETE FROM "Outbox_Transactional_Outbox"
         WHERE status = 'SENT'
         AND "processedAt" < NOW() - INTERVAL '5 minutes'
       `);

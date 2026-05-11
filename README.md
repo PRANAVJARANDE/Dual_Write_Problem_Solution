@@ -1,6 +1,8 @@
-1. Nomenclature -- after scalability 
-2. Design poller for Listen to yourself - PUBLISH EVENTS TO NEW KAFKA TOPIC
-
+1. Nomenclature -- after scalability                                         --- Done
+2. Design poller for Listen to yourself - PUBLISH EVENTS TO NEW KAFKA TOPIC  --- Done 
+3. Check if cleanup happens properly                                         --- Done 
+4. Testing of ltu Poller                                                     --- Done 
+5. Consume events by same order_Service to add data to orders table 
 
 Nomenclature 
 1. Kafka 
@@ -11,7 +13,7 @@ Nomenclature
    Services - order_service_1-backend-1
             - order_service_2-backend-1
     
-3. Database - 1 Database in both services 
+3. Database - 1 Database in both services Container: postgres_outbox
    Tables -  Order 
           -  Outbox_Transactional_Outbox
           -  Outbox_Listen_To_yourself
@@ -22,8 +24,9 @@ Nomenclature
         1.  poller_1_transactional_outbox-backend-1
         2.  poller_2_transactional_outbox-backend-1
    - Listen to Yourself Pattern :
-        1.  
-       
+        1.  poller_1_listen_to_yourself-backend-1
+        2.  poller_2_listen_to_yourself-backend-1
+   
 
 
 Commands
