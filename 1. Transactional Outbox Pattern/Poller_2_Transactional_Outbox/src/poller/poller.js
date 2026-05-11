@@ -103,7 +103,7 @@ const POLL_INTERVAL = process.env.POLL_INTERVAL;
     {
       const payload = event.payload;
       await producer.send({
-        topic: "order-events",
+        topic: "Orders_1___Transactional_Outbox_Pattern",
         messages: [
           {
             key: event.id,

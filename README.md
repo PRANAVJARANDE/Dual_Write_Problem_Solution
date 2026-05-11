@@ -1,5 +1,27 @@
-1. Debug if order gets add to ltu_Outbox --- Done 
-2. Nomenclature -- after scalability 
+1. Nomenclature -- after scalability 
+2. Design poller for Listen to yourself - PUBLISH EVENTS TO NEW KAFKA TOPIC
+
+
+Nomenclature 
+1. Kafka 
+   Topics - Orders_1___Transactional_Outbox_Pattern
+          - Orders_2___Listen_To_Yourself_Pattern
+  
+2. Order_Service_Producers 
+   Services - order_service_1-backend-1
+            - order_service_2-backend-1
+    
+3. Database - 1 Database in both services 
+   Tables -  Order 
+          -  Outbox_Transactional_Outbox
+          -  Outbox_Listen_To_yourself
+   - (Can get Schema from Prisma Studio)
+  
+4. Poller 
+   Container (Todo)
+
+
+
 
 
 Commands

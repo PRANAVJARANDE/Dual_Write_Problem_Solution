@@ -110,3 +110,96 @@ export const getOutbox = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+
+export const getOutbox_Listen_To_Yourself = async (req, res) => {
+  try {
+    const outbox = await Outbox_Listen_To_yourself.findAll({
+      order: [["createdAt", "DESC"]],
+    });
+
+    res.status(200).json({
+      count: outbox.length,
+      data: outbox,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export const deleteOrders = async (req, res) => {
+  const transaction = await sequelize.transaction();
+
+  try {
+    const deletedCount = await Order.destroy({
+      where: {},
+      truncate: true,
+      transaction,
+    });
+
+    await transaction.commit();
+
+    res.status(200).json({
+      message: "All orders deleted successfully",
+      deletedCount,
+    });
+  } catch (err) {
+    await transaction.rollback();
+
+    res.status(500).json({
+      error: err.message,
+    });
+  }
+};
+
+
+export const deleteOutbox = async (req, res) => {
+  const transaction = await sequelize.transaction();
+
+  try {
+    const deletedCount = await Outbox.destroy({
+      where: {},
+      truncate: true,
+      transaction,
+    });
+
+    await transaction.commit();
+
+    res.status(200).json({
+      message: "All outbox events deleted successfully",
+      deletedCount,
+    });
+  } catch (err) {
+    await transaction.rollback();
+
+    res.status(500).json({
+      error: err.message,
+    });
+  }
+};
+
+
+export const deleteOutbox_Listen_To_Yourself = async (req, res) => {
+  const transaction = await sequelize.transaction();
+
+  try {
+    const deletedCount = await Outbox_Listen_To_yourself.destroy({
+      where: {},
+      truncate: true,
+      transaction,
+    });
+
+    await transaction.commit();
+
+    res.status(200).json({
+      message: "All listen-to-yourself outbox events deleted successfully",
+      deletedCount,
+    });
+  } catch (err) {
+    await transaction.rollback();
+
+    res.status(500).json({
+      error: err.message,
+    });
+  }
+};

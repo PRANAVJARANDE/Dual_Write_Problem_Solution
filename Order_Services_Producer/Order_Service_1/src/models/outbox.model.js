@@ -1,8 +1,8 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../db/sequelize.js";
 
-export const Outbox_Listen_To_yourself = sequelize.define(
-  "Outbox_Listen_To_yourself",
+export const Outbox = sequelize.define(
+  "Outbox",
   {
     id: {
       type: DataTypes.STRING,
@@ -18,7 +18,7 @@ export const Outbox_Listen_To_yourself = sequelize.define(
     processedAt: DataTypes.DATE,
   },
   {
-    tableName: "Outbox",
+    tableName: "Outbox_Transactional_Outbox",
     timestamps: true,
   }
 );
