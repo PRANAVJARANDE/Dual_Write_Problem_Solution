@@ -2,7 +2,10 @@
 2. Design poller for Listen to yourself - PUBLISH EVENTS TO NEW KAFKA TOPIC  --- Done 
 3. Check if cleanup happens properly                                         --- Done 
 4. Testing of ltu Poller                                                     --- Done 
-5. Consume events by same order_Service to add data to orders table 
+5. Consume events by same order_Service to add data to orders table          --- Done
+6. Check simultaneous consumption of events                                  --- Done
+7. Idempotencty Solved - Consumer side                                       --- Done
+
 
 Nomenclature 
 1. Kafka 
@@ -17,6 +20,7 @@ Nomenclature
    Tables -  Order 
           -  Outbox_Transactional_Outbox
           -  Outbox_Listen_To_yourself
+          -  ProcessedEvent (LTU IDEMPOTENCY)
    - (Can get Schema from Prisma Studio)
   
 4. Poller 
@@ -30,6 +34,9 @@ Nomenclature
 
 
 Commands
+--- removes docker container 
+docker compose down
+docker compose up -d --build
 
 DATABASE :
 To see prisma tables 

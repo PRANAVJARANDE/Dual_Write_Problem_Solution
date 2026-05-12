@@ -102,6 +102,7 @@ const POLL_INTERVAL = process.env.POLL_INTERVAL;
     try 
     {
       const payload = event.payload;
+      payload.id=event.id;
       await producer.send({
         topic: "Orders_2___Listen_To_Yourself_Pattern",
         messages: [
