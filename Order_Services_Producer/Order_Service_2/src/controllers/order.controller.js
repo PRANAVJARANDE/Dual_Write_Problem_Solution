@@ -21,6 +21,7 @@ export const addOrders_Transactional_Outbox_Pattern = async (req, res) => {
           customerName: order.customerName,
           productName: order.productName,
           quantity: order.quantity,
+          Pattern_Type: "Transactional_Outbox"
         },
         { transaction }
       );
@@ -78,6 +79,37 @@ export const addOrders_Listen_To_Yourself = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+export const addOrders_Transactional_Log_Tailing_Pattern = async (req, res) => {
+  const { orders,failureRate} = req.body;
+  const transaction = await sequelize.transaction();
+  try {
+    const result = [];
+
+    for (let order of orders) {
+      const id = randomUUID();
+
+      const newOrder = await Order.create(
+        {
+          id,
+          customerName: order.customerName,
+          productName: order.productName,
+          quantity: order.quantity,
+          Pattern_Type: "Transactional_Log_Tailing"
+        },
+        { transaction }
+      );
+
+      result.push(newOrder);
+    }
+    await transaction.commit();
+    res.status(201).json(result);
+  } catch (err) {
+    await transaction.rollback();
+    res.status(500).json({ error: err.message });
+  }
+};
+
 
 
 export const getOrders = async (req, res) => {

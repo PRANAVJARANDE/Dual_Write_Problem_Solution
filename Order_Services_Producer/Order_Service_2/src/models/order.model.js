@@ -11,6 +11,10 @@ export const Order = sequelize.define(
     customerName: DataTypes.STRING,
     productName: DataTypes.STRING,
     quantity: DataTypes.INTEGER,
+    Pattern_Type: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
     status: {
       type: DataTypes.STRING,
       defaultValue: "CREATED",

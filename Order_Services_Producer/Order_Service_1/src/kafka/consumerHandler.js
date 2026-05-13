@@ -33,6 +33,7 @@ export async function startConsumer() {
             customerName: event.customerName,
             productName: event.productName,
             quantity: event.quantity,
+            Pattern_Type: "Listen_To_Yourself"
           },
           { transaction }
         );

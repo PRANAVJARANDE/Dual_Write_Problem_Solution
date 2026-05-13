@@ -5,7 +5,16 @@
 5. Consume events by same order_Service to add data to orders table          --- Done
 6. Check simultaneous consumption of events                                  --- Done
 7. Idempotencty Solved - Consumer side                                       --- Done
+8. Filter Orders using : Pattern_Type (Column)                               --- Done
+9. Create Routes in Database for tlt                                         --- Done
+10. Deploy Container for Debezium
+11. Read WAL from Debezium along with filter (Transactional_Log_Tailing)
+12. Publish Events from Debezium
+13. UI                    
+14. Consumer
+    
 
+Study deployment of Kafka
 
 Nomenclature 
 1. Kafka 
@@ -17,7 +26,7 @@ Nomenclature
             - order_service_2-backend-1
     
 3. Database - 1 Database in both services Container: postgres_outbox
-   Tables -  Order 
+   Tables -  Order ( Pattern_Type - Transactional_Outbox , Listen_To_Yourself , Transactional_Log_Tailing)
           -  Outbox_Transactional_Outbox
           -  Outbox_Listen_To_yourself
           -  ProcessedEvent (LTU IDEMPOTENCY)
@@ -84,5 +93,8 @@ docker-compose up
 
 
 
-
-    
+// Installations from beginning 
+1. Database_Setup
+2. Kafka Setup
+      - Create topics in Kafka 
+3. Order_Service setup
