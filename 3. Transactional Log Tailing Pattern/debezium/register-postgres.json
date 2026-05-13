@@ -1,0 +1,23 @@
+{
+  "name": "postgres-connector",
+
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+
+    "database.hostname":  "postgres_outbox",
+
+    "database.port": "5432",
+
+    "database.user": "myuser",
+
+    "database.password": "mypassword",
+
+    "database.dbname": "outbox_db",
+
+    "topic.prefix": "postgres",
+
+    "plugin.name": "pgoutput",
+
+    "table.include.list": "public.orders"
+  }
+}

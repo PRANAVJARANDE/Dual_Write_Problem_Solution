@@ -10,6 +10,7 @@ model Order {
   id           String   @id @default(cuid())
   customerName String
   productName  String
+  Pattern_Type String
   quantity     Int
   status       String   @default("CREATED")
   createdAt    DateTime @default(now())
