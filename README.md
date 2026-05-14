@@ -12,8 +12,8 @@
 11. Read WAL from Debezium along with filter (Transactional_Log_Tailing)     --- Done
 12. Publish Events from Debezium                                             --- Done
 13. Socket connection in Consumer for getting an event                       --- Done (Testing Remaining)
-14. Socket connection with Order_Service     
-15. UI                    
+14. Socket connection with Order_Service                                     --- Done     
+15. UI                                                                       
 16. Consumer                                                                 --- Done
     
 

@@ -2,9 +2,10 @@ import { consumer } from "./kafka.js";
 import { Order } from "../models/order.model.js";
 import { sequelize } from "../db/sequelize.js";
 import { ProcessedEvent } from "../models/processedEvent.model.js";
+import { getIO } from "../socket/socket.js";
 
 export async function startConsumer() {
-
+ const io = getIO();
   await consumer.run({
 
     eachMessage: async ({ message }) => {
@@ -37,7 +38,7 @@ export async function startConsumer() {
           },
           { transaction }
         );
-
+        io.emit("order-added", {pattern: "Listen_To_Yourself",order});
         await ProcessedEvent.create({eventId,},{ transaction });
         await transaction.commit();
 

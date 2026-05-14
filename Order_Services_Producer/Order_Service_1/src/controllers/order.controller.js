@@ -3,18 +3,17 @@ import { Order } from "../models/order.model.js";
 import { Outbox} from "../models/outbox.model.js";
 import {Outbox_Listen_To_yourself} from "../models/outbox_ltu.js"
 import { randomUUID } from "crypto";
+import { getIO } from "../socket/socket.js"
 
 export const addOrders_Transactional_Outbox_Pattern = async (req, res) => {
   const { orders,failureRate} = req.body;
-
   const transaction = await sequelize.transaction();
-
+  const io = getIO();
   try {
     const result = [];
-
-    for (let order of orders) {
+    for (let order of orders) 
+    {
       const id = randomUUID();
-
       const newOrder = await Order.create(
         {
           id,
@@ -25,8 +24,9 @@ export const addOrders_Transactional_Outbox_Pattern = async (req, res) => {
         },
         { transaction }
       );
+      io.emit("order-added", {pattern: "Transactional_Outbox",newOrder});
 
-      await Outbox.create(
+      const tp=await Outbox.create(
         {
           id: randomUUID(),
           payload: order,
@@ -35,14 +35,15 @@ export const addOrders_Transactional_Outbox_Pattern = async (req, res) => {
         },
         { transaction }
       );
-
+      io.emit("outbox-order-added", {pattern: "Transactional_Outbox",tp});
       result.push(newOrder);
     }
 
     await transaction.commit();
-
     res.status(201).json(result);
-  } catch (err) {
+  } 
+  catch (err) 
+  {
     await transaction.rollback();
     res.status(500).json({ error: err.message });
   }
@@ -51,7 +52,7 @@ export const addOrders_Transactional_Outbox_Pattern = async (req, res) => {
 
 export const addOrders_Listen_To_Yourself = async (req, res) => {
   const { orders,failureRate} = req.body;
-
+  const io = getIO();
   const transaction = await sequelize.transaction();
 
   try {
@@ -67,7 +68,7 @@ export const addOrders_Listen_To_Yourself = async (req, res) => {
         },
         { transaction }
       );
-
+      io.emit("outbox-order-added", {pattern: "Listen_To_Yourself",ev});
       result.push(ev);
     }
 
@@ -83,6 +84,7 @@ export const addOrders_Listen_To_Yourself = async (req, res) => {
 export const addOrders_Transactional_Log_Tailing_Pattern = async (req, res) => {
   const { orders,failureRate} = req.body;
   const transaction = await sequelize.transaction();
+  const io = getIO();
   try {
     const result = [];
 
@@ -99,7 +101,7 @@ export const addOrders_Transactional_Log_Tailing_Pattern = async (req, res) => {
         },
         { transaction }
       );
-
+      io.emit("order-added", {pattern: "Transactional_Log_Tailing",newOrder});
       result.push(newOrder);
     }
     await transaction.commit();
