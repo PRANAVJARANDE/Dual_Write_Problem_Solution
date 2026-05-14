@@ -11,8 +11,10 @@
 10. Deploy Container for Debezium                                            --- Done
 11. Read WAL from Debezium along with filter (Transactional_Log_Tailing)     --- Done
 12. Publish Events from Debezium                                             --- Done
-13. UI                    
-14. Consumer
+13. Socket connection in Consumer for getting an event                       --- Done (Testing Remaining)
+14. Socket connection with Order_Service     
+15. UI                    
+16. Consumer                                                                 --- Done
     
 
 Study deployment of Kafka
@@ -21,6 +23,7 @@ Study deployment of Kafka
 1. Kafka 
    Topics - Orders_1___Transactional_Outbox_Pattern
           - Orders_2___Listen_To_Yourself_Pattern
+          - Orders_3___Transactional_Log_Tailing
   
 2. Order_Service_Producers 
    Services - order_service_1-backend-1
