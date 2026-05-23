@@ -1,110 +1,208 @@
-# TODO -:
-1. Nomenclature -- after scalability                                         --- Done
-2. Design poller for Listen to yourself - PUBLISH EVENTS TO NEW KAFKA TOPIC  --- Done 
-3. Check if cleanup happens properly                                         --- Done 
-4. Testing of ltu Poller                                                     --- Done 
-5. Consume events by same order_Service to add data to orders table          --- Done
-6. Check simultaneous consumption of events                                  --- Done
-7. Idempotencty Solved - Consumer side                                       --- Done
-8. Filter Orders using : Pattern_Type (Column)                               --- Done
-9. Create Routes in Database for tlt                                         --- Done
-10. Deploy Container for Debezium                                            --- Done
-11. Read WAL from Debezium along with filter (Transactional_Log_Tailing)     --- Done
-12. Publish Events from Debezium                                             --- Done
-13. Socket connection in Consumer for getting an event                       --- Done (Testing Remaining)
-14. Socket connection with Order_Service                                     --- Done     
-15. UI                                                                       
-16. Consumer                                                                 --- Done
-    
+# Solving the Dual Write Problem in Distributed Systems
 
-Study deployment of Kafka
+A practical implementation of multiple reliable event-driven design patterns to solve the **Dual Write Problem** using **Kafka**, **PostgreSQL**, **Debezium**, and **Microservices Architecture**.
 
-# Nomenclature 
-1. Kafka 
-   Topics - Orders_1___Transactional_Outbox_Pattern
-          - Orders_2___Listen_To_Yourself_Pattern
-          - Orders_3___Transactional_Log_Tailing
-  
-2. Order_Service_Producers 
-   Services - order_service_1-backend-1
-            - order_service_2-backend-1
-    
-3. Database - 1 Database in both services Container: postgres_outbox
-   Tables -  Order ( Pattern_Type - Transactional_Outbox , Listen_To_Yourself , Transactional_Log_Tailing)
-          -  Outbox_Transactional_Outbox
-          -  Outbox_Listen_To_yourself
-          -  ProcessedEvent (LTU IDEMPOTENCY)
-   - (Can get Schema from Prisma Studio)
-  
-4. Poller 
-   - Transactional Outbox Pattern : 
-        1.  poller_1_transactional_outbox-backend-1
-        2.  poller_2_transactional_outbox-backend-1
-   - Listen to Yourself Pattern :
-        1.  poller_1_listen_to_yourself-backend-1
-        2.  poller_2_listen_to_yourself-backend-1
-   
-5. Debezium 
-      - setup debezium
- - ## CONNECTORS : ( DB <--> Debezium )
-    - add connector - curl -X POST http://localhost:8083/connectors -H "Content-Type: application/json" --data @register-postgres.json
-    - delete connector - curl -X DELETE http://localhost:8083/connectors/postgres-connector
-    - See all connectors - curl http://localhost:8083/connectors
- -  ## CONNECTOR : (Debezium <---> Kafka)
-    - Done in Docker-compose.yml
+---
+
+# Introduction
+
+In distributed systems and microservice architectures, services often need to perform two operations together:
+
+1. Write data to the database  
+2. Publish an event/message to a message broker like Kafka  
+
+This creates the **Dual Write Problem**.
+
+The main challenge with dual writes is maintaining consistency between the database and the message broker. Since both operations happen independently, failures during either operation can lead to inconsistent system states, such as:
+- Data being stored in the database but the event not being published
+- Event being published but the database transaction failing
+
+This repository demonstrates different approaches to solving the Dual Write Problem using reliable event-driven design patterns.
+
+<br>
+
+![Dual Write Problem](/Images/Dual_Write_problem.png)
+
+<br>
+
+---
+
+# Design Patterns Implemented
+
+## 1. Transactional Outbox Pattern
+
+The service writes both the business data and an outbox event into the same database transaction. A separate process then reads the outbox table and publishes events to Kafka, ensuring reliable event delivery and maintaining consistency.
+
+<br>
+
+![Transactional Outbox Pattern](/Images/Transactional%20Outbox%20Pattern.png)
+
+<br>
+
+---
+
+## 2. Listen To Yourself Pattern
+
+The service publishes events to Kafka and also consumes its own events to update internal state or trigger further processing. This pattern enables event-driven workflows while helping maintain consistency across services.
+
+<br>
+
+![Listen To Yourself Pattern](/Images/Listen%20To%20YourSelf%20Pattern.png)
+
+<br>
+
+---
+
+## 3. Transactional Log Tailing Pattern
+
+Instead of directly publishing events, database transaction logs (WAL/binlogs) are monitored using tools like Debezium. Changes are captured directly from the database logs and streamed to Kafka, ensuring reliable and consistent event publishing.
+
+<br>
+
+![Transactional Log Tailing Pattern](/Images/Transactional%20Log%20Tailing%20Pattern.png)
+
+<br>
+
+---
+
+# Goal of This Project
+
+This project aims to demonstrate and simulate how modern distributed systems solve consistency problems between database operations and asynchronous event publishing using different architectural patterns and messaging strategies.
+
+# Nomenclature
+
+## 1. Kafka
+
+### Topics
+- `Orders_1___Transactional_Outbox_Pattern`
+- `Orders_2___Listen_To_Yourself_Pattern`
+- `Orders_3___Transactional_Log_Tailing`
+
+<br>
+
+---
+
+## 2. Order Service Producers
+
+### Services
+- `order_service_1-backend-1`
+- `order_service_2-backend-1`
+
+These services are responsible for:
+- Writing order data to PostgreSQL
+- Publishing or generating events for Kafka
+- Demonstrating different solutions to the Dual Write Problem
+
+<br>
+
+---
+
+## 3. Database
+
+### Database Name
+- `postgres_outbox`
+
+### Tables
+
+#### Order
+Stores business order data for all implemented patterns.
+
+**Pattern Types**
+- `Transactional_Outbox`
+- `Listen_To_Yourself`
+- `Transactional_Log_Tailing`
+
+#### Outbox_Transactional_Outbox
+Stores events/messages for the Transactional Outbox Pattern before they are published to Kafka.
+
+#### Outbox_Listen_To_Yourself
+Stores events/messages used in the Listen To Yourself Pattern workflow.
+
+#### ProcessedEvent
+Used for idempotency in the Listen To Yourself Pattern to prevent duplicate event processing.
+
+> Schema and table structures can be explored using Prisma Studio.
+
+<br>
+
+---
+
+## 4. Pollers
+
+Pollers continuously monitor outbox tables and publish pending events to Kafka.
+
+### Transactional Outbox Pattern
 
 
+- `poller_1_transactional_outbox-backend-1`
+- `poller_2_transactional_outbox-backend-1`
 
-Difference between DockerFile and dockercompose.yml
-Docker Network 
-
-Working of Kafka 
-why brokers: ["kafka:29092"], 
-
-Start Commands
-PSQL 
-- New user : docker-compose up -d
-- Start existing : docker start postgres_outbox
-
-Order Service : docker-compose up --build
+### Listen To Yourself Pattern
 
 
-# Commands -:
-docker ps -a
-docker start container_name
+- `poller_1_listen_to_yourself-backend-1`
+- `poller_2_listen_to_yourself-backend-1`
 
-docker-compose down --remove-orphans
-docker-compose build --no-cache
-docker-compose up
+<br>
 
---- removes docker container 
-docker compose down
-docker compose up -d --build
+---
 
-DATABASE :
-To see prisma tables 
-- npx prisma studio
+## 5. Debezium
 
-# Restart : Once all containers exist :
+Debezium is used to implement the Transactional Log Tailing Pattern by capturing database changes directly from PostgreSQL transaction logs and streaming them to Kafka.
 
-1. Kafka
- - docker start kafka 
+### Setup Debezium Connector
 
-2. Database
- - docker start postgres_outbox
+#### Register Connector
 
-3. Order Service 
-   docker start order_service_1-backend-1
-   docker start order_service_2-backend-1
+```bash
+curl -X POST http://localhost:8083/connectors \
+-H "Content-Type: application/json" \
+--data @register-postgres.json
+```
 
-4. Start the pollers 
-   docker start poller_1-backend-1
-   docker start poller_2-backend-2
+#### Delete Connector
 
+```bash
+curl -X DELETE http://localhost:8083/connectors/postgres-connector
+```
 
-# Installations from beginning 
-1. Database_Setup
-2. Kafka Setup
-      - Create topics in Kafka 
-3. Order_Service setup
-4. Start Pollers 
+#### View All Connectors
+
+```bash
+curl http://localhost:8083/connectors
+```
+
+### Debezium ↔ Kafka Integration
+
+The integration between Debezium and Kafka is configured inside:
+
+```text
+docker-compose.yml
+```
+
+<br>
+
+---
+
+# Overall Architecture Components
+
+```text
+Client Request
+      ↓
+Order Service
+      ↓
+PostgreSQL Database
+      ↓
+ ┌───────────────────────────────┐
+ │ Dual Write Solution Patterns  │
+ └───────────────────────────────┘
+      ↓
+ ├── Transactional Outbox Poller
+ ├── Listen To Yourself Poller
+ └── Debezium CDC
+      ↓
+Kafka Topics
+      ↓
+Consumers / Downstream Services
+```
