@@ -8,6 +8,7 @@ const POLL_INTERVAL = process.env.POLL_INTERVAL;
   export async function startPoller() 
   {
     const io = getIO();
+    io.emit("poller-started",{timestamp: Date.now(),poller:"Poller_1_ltu"});
     console.log("------------------- Poller started -----------------------------------------------------------------------");
     while (true) 
     {
@@ -30,6 +31,7 @@ const POLL_INTERVAL = process.env.POLL_INTERVAL;
             console.log("\n\n");
             for (const event of events) 
             {
+                io.emit("locking-and-processing",{timestamp: Date.now(),poller:"Poller_1_ltu",data:{id:event.id,payload:JSON.stringify(event.payload, null, 2)}});
                 console.log(` Locking & marking PROCESSING:`);
                 console.log("ID:", event.id);
                 console.log("Payload:", JSON.stringify(event.payload, null, 2));
@@ -82,6 +84,7 @@ const POLL_INTERVAL = process.env.POLL_INTERVAL;
   {
     console.log("\n");
     console.log(" Processing:", event.id);
+    io.emit("processing",{timestamp: Date.now(),poller:"Poller_1_ltu",data:{id:event.id}})
 
     const random = Math.random();
 
