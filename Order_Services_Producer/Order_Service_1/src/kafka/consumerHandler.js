@@ -49,7 +49,7 @@ export async function startConsumer() {
       } catch (err) {
 
         await transaction.rollback();
-
+        io.emit("order-add-failed", {pattern: "Listen_To_Yourself",order});
         console.error(
           "Consumer transaction failed:",
           err.message

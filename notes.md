@@ -15,7 +15,13 @@
 14. Socket connection with Order_Service                                     --- Done (Testing Remaining)   
 15. UI                                                                       
 16. Consumer                                                                 --- Done
+17. Create a script to Restart and Install the project 
+18. Poller logs on UI
     
+    Days remainaing - 
+    1. Do UI 
+    2. Do socket connections  -- Done 
+    3. scripting
 
 Study deployment of Kafka
 

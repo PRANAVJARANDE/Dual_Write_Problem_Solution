@@ -44,6 +44,7 @@ export const addOrders_Transactional_Outbox_Pattern = async (req, res) => {
   } 
   catch (err) 
   {
+    io.emit("order-add-failed", {pattern: "Transactional_Outbox",order});
     await transaction.rollback();
     res.status(500).json({ error: err.message });
   }
@@ -108,6 +109,7 @@ export const addOrders_Transactional_Log_Tailing_Pattern = async (req, res) => {
     res.status(201).json(result);
   } catch (err) {
     await transaction.rollback();
+    io.emit("order-add-failed", {pattern: "Transactional_Log_Tailing",order});
     res.status(500).json({ error: err.message });
   }
 };

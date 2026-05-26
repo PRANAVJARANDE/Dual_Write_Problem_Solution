@@ -1,11 +1,13 @@
 import { pool } from "../db/index.js";
 import { producer } from "../kafka/kafka.js";
+import { getIO } from "../socket/socket.js";
 
 const BATCH_SIZE = process.env.BATCH_SIZE;
 const POLL_INTERVAL = process.env.POLL_INTERVAL;
 
   export async function startPoller() 
   {
+    const io = getIO();
     console.log("------------------- Poller started -----------------------------------------------------------------------");
     while (true) 
     {
@@ -21,7 +23,7 @@ const POLL_INTERVAL = process.env.POLL_INTERVAL;
                 LIMIT $1
                 FOR UPDATE SKIP LOCKED`, [BATCH_SIZE]
             );
-            
+            io.emit("cycle-started", {timestamp: Date.now(),poller:"Poller_2_ltu"});
             console.log("--------------- CYCLE Started --------------------------------------------\n\n");
             const events = res.rows;
   
@@ -85,6 +87,7 @@ const POLL_INTERVAL = process.env.POLL_INTERVAL;
 
     if (random < event.failureRate) 
     {
+        io.emit("kafka-failure", {timestamp: Date.now(),poller:"Poller_2_ltu"});
         console.log(" Failure Publishing Event (Simulation) : ",event.id);
         console.log("\n");
         await pool.query(`
@@ -112,7 +115,7 @@ const POLL_INTERVAL = process.env.POLL_INTERVAL;
           },
         ],
       });
-
+      io.emit("kafka-success", {timestamp: Date.now(),poller:"Poller_2_ltu"});
       console.log("Event sent to Kafka:", event.id);
 
       await pool.query(`
@@ -127,7 +130,7 @@ const POLL_INTERVAL = process.env.POLL_INTERVAL;
     catch (err) 
     {
       console.error("Kafka publish failed:", err.message);
-
+      io.emit("kafka-failure", {timestamp: Date.now(),poller:"Poller_2_ltu"});
       await pool.query(`
         UPDATE "Outbox_Listen_To_yourself"
         SET status = 'PENDING',
