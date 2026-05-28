@@ -82,6 +82,7 @@ const POLL_INTERVAL = process.env.POLL_INTERVAL;
 
   async function handleEvent(event) 
   {
+    const io = getIO();
     console.log("\n");
     console.log(" Processing:", event.id);
     io.emit("processing",{timestamp: Date.now(),poller:"Poller_2_ltu",data:{id:event.id}})

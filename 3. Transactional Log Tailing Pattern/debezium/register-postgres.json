@@ -14,7 +14,7 @@
     
     "transforms.filter.type": "io.debezium.transforms.Filter",
     "transforms.filter.language": "jsr223.groovy",
-    "transforms.filter.condition": "value.after != null && value.after.pattern_type == 'Transactional_Log_Tailing'",
+    "transforms.filter.condition": "value.after != null && value.after.Pattern_Type == 'Transactional_Log_Tailing'",
     
     "transforms.route.type": "org.apache.kafka.connect.transforms.RegexRouter",
     "transforms.route.regex": "postgres\\.public\\.Order",

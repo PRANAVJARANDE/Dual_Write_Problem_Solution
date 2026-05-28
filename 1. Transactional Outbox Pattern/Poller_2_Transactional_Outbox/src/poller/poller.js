@@ -83,6 +83,7 @@ const POLL_INTERVAL = Number(process.env.POLL_INTERVAL);
 
   async function handleEvent(event) 
   {
+    const io = getIO();
     console.log("\n");
     console.log(" Processing:", event.id);
     io.emit("processing",{timestamp: Date.now(),poller:"Poller_2_top",data:{id:event.id}})
@@ -91,7 +92,7 @@ const POLL_INTERVAL = Number(process.env.POLL_INTERVAL);
 
     if (random < event.failureRate) 
     {
-      io.emit("kafka-failure", {timestamp: Date.now(),poller:"Poller_2_top"});
+      io.emit("kafka-failure", {timestamp: Date.now(),poller:"Poller_2_top",data:{id:event.id}});
         console.log(" Failure Publishing Event (Simulation) : ",event.id);
         console.log("\n");
         await pool.query(`
@@ -134,7 +135,7 @@ const POLL_INTERVAL = Number(process.env.POLL_INTERVAL);
     catch (err) 
     {
       console.error("Kafka publish failed:", err.message);
-      io.emit("kafka-failure", {timestamp: Date.now(),poller:"Poller_2_top"});
+      io.emit("kafka-failure", {timestamp: Date.now(),poller:"Poller_2_top",data:{id:event.id}});
       await pool.query(`
         UPDATE "Outbox_Transactional_Outbox"
         SET status = 'PENDING',
