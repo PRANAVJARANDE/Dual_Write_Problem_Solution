@@ -69,6 +69,178 @@ Instead of directly publishing events, database transaction logs (WAL/binlogs) a
 
 This project aims to demonstrate and simulate how modern distributed systems solve consistency problems between database operations and asynchronous event publishing using different architectural patterns and messaging strategies.
 
+# Database Schema
+
+Below is the database schema used in the project architecture.
+
+![Database Schema](./Images/SCHEMA.png)
+
+
+# UI Simulation
+
+<video src="./Images/UI SIMULATION.mp4" controls width="100%">
+</video>
+
+# Installation Guide
+
+
+
+## 1. Create Docker Containers
+
+
+
+Before starting the project, make sure Docker and Docker Compose are installed on your system.
+
+
+
+Go into each service directory and build the containers using Docker Compose.
+
+
+
+```bash
+
+docker compose up --build -d
+
+```
+
+
+
+Repeat this step for all the required services/containers in the project.
+
+
+
+---
+
+
+
+## 2. Start All Services
+
+
+
+After all Docker containers are created successfully, move to the root directory of the project and run:
+
+
+
+```bash
+
+chmod +x start_all_services.sh
+
+./start_all_services.sh
+
+```
+
+
+
+This script will automatically start all required backend services, pollers, consumers, and supporting infrastructure.
+
+
+
+---
+
+
+
+## 3. Debezium Connector Setup
+
+
+
+After the Debezium container starts successfully, attach the connector manually during installation.
+
+
+
+Example:
+
+
+
+```bash
+
+curl -X POST http://localhost:8083/connectors \
+
+-H "Content-Type: application/json" \
+
+-d @connector.json
+
+```
+
+
+
+Make sure:
+
+
+
+* Kafka is running
+
+* Kafka Connect is running
+
+* PostgreSQL/MySQL database is accessible
+
+* `connector.json` contains the correct database configuration
+
+
+
+You can verify the connector using:
+
+
+
+```bash
+
+curl http://localhost:8083/connectors
+
+```
+
+
+
+---
+
+
+
+## 4. Verify Running Containers
+
+
+
+To check whether all containers are running:
+
+
+
+```bash
+
+docker ps
+
+```
+
+
+
+To check logs of a specific container:
+
+
+
+```bash
+
+docker logs <container_name>
+
+```
+
+
+
+---
+
+
+
+## 5. Stop All Containers
+
+
+
+To stop all running containers:
+
+
+
+```bash
+
+docker compose down
+
+```
+
+
+
 # Nomenclature
 
 ## 1. Kafka

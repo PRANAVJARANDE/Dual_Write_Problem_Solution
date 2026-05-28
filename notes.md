@@ -13,10 +13,14 @@
 12. Publish Events from Debezium                                             --- Done
 13. Socket connection in Consumer for getting an event                       --- Done 
 14. Socket connection with Order_Service                                     --- Done  
-15. UI                                                                       
+15. UI                                                                       --- Done
 16. Consumer                                                                 --- Done
-17. Create a script to Restart and Install the project 
-18. Poller logs on UI
+17. Create a script to Restart and Install the project                       --- Done
+18. Poller logs on UI                                                        --- Done
+
+#Command to restart containers 
+chmod +x start_all_services.sh
+./start_all_services.sh
 
 Study deployment of Kafka
 
