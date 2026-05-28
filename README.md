@@ -75,11 +75,17 @@ Below is the database schema used in the project architecture.
 
 ![Database Schema](./Images/SCHEMA.png)
 
+# Poller Work Flow 
+
+![Workflow 1](./Images/workflow1.png)
+
+![Workflow 2](./Images/workflow2.jpg)
+
 
 # UI Simulation
 
-<video src="./Images/UI SIMULATION.mp4" controls width="100%">
-</video>
+[![Watch the UI Simulation](./Images/thumbnail.png)](https://drive.google.com/file/d/16VK7HRab0EsdAbO8uWNyxW2-bpG2himC/view?usp=sharing)
+
 
 # Installation Guide
 
@@ -378,3 +384,12 @@ Kafka Topics
       ↓
 Consumers / Downstream Services
 ```
+
+### Built with passion, persistence, and lots of debugging ☕
+
+#### Crafted by **Pranav Jarande**
+
+⭐ Feel free to fork, improve, and add your own innovations to this project.
+If you found this repository useful, consider giving it a star!
+
+</div>
