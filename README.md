@@ -77,9 +77,9 @@ Below is the database schema used in the project architecture.
 
 # Poller Work Flow 
 
-![Workflow 1](./Images/workflow1.png)
+<img src="./Images/workflow1.png" alt="Workflow 1" width="400">
 
-![Workflow 2](./Images/workflow2.jpg)
+<img src="./Images/workflow2.jpg" alt="Workflow 2" width="400">
 
 
 # UI Simulation
