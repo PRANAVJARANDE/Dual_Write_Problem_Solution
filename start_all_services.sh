@@ -97,6 +97,21 @@ wait_for_postgres() {
   log_success "PostgreSQL is ready"
 }
 
+wait_for_consumer_postgres() {
+  local retries=0
+  log_info "Waiting for Consumer PostgreSQL to be ready (pg_isready) ..."
+  until docker exec postgres_consumer pg_isready -q 2>/dev/null; do
+    if [ "$retries" -ge "$HEALTH_CHECK_RETRIES" ]; then
+      log_error "Consumer PostgreSQL not ready after ${HEALTH_CHECK_RETRIES} retries"
+      exit 1
+    fi
+    sleep "$HEALTH_CHECK_INTERVAL"
+    retries=$((retries + 1))
+    log_info "  still waiting ($retries/${HEALTH_CHECK_RETRIES})..."
+  done
+  log_success "Consumer PostgreSQL is ready"
+}
+
 wait_for_kafka() {
   local retries=0
   log_info "Waiting for Kafka broker to be ready ..."
@@ -140,7 +155,9 @@ log_step "Stage 1 — Infrastructure (Zookeeper → Postgres → Kafka)"
 
 start_container "zookeeper" 5
 start_container "postgres_outbox" 5
-wait_for_postgres                     
+wait_for_postgres
+start_container "postgres_consumer" 5
+wait_for_consumer_postgres
 
 start_container "kafka" 8
 wait_for_kafka                        
@@ -177,7 +194,7 @@ echo ""
 
 log_step "Service Status"
 docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" \
-  | grep -E "NAME|zookeeper|postgres_outbox|kafka|debezium|order_service|consumer_service|poller"
+  | grep -E "NAME|zookeeper|postgres_outbox|postgres_consumer|kafka|debezium|order_service|consumer_service|poller"
 echo ""
 
 echo -e "  ${CYAN}Kafka UI   →${NC}  http://localhost:8080"
