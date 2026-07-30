@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { addOrder, deleteOrders, deleteOutbox, getListenOutbox, getOrders, getOutbox } from "./Services/order.service";
 import { useSockets } from "../Features/useSocket";
 import {
-  Database,
   Radio,
   ChevronRight,
   Trash2,
@@ -30,11 +29,12 @@ const CHART_COLORS = {
   kafkaFail: "#b84c4c",
 };
 
+const TAILING_TOPIC = "Orders_3___Transactional_Log_Tailing";
+
 export default function App() {
   const {
     orderSocket1,
     consumerSocket,
-    statuses,
     orderSocket2,
     poller_1_ltu_Socket,
     poller_1_top_Socket,
@@ -102,19 +102,21 @@ export default function App() {
     inconsistentRuns: 0,
   });
 
-  const handleKafkaSuccess = useCallback(({ poller, data }) => {
-    if (poller == "Poller_1_top") addLog("poller1-transactional", `Kafka Event Publish SUCCESS : ${data.id}`, "SUCCESS");
-    else if (poller == "Poller_2_top") addLog("poller2-transactional", `Kafka Event Publish SUCCESS : ${data.id}`, "SUCCESS");
-    else if (poller == "Poller_1_ltu") addLog("poller1-listen", `Kafka Event Publish SUCCESS : ${data.id}`, "SUCCESS");
-    else if (poller == "Poller_2_ltu") addLog("poller2-listen", `Kafka Event Publish SUCCESS : ${data.id}`, "SUCCESS");
+  const handleKafkaSuccess = useCallback(({ poller, data } = {}) => {
+    const eventId = data?.id ?? "unknown";
+    if (poller == "Poller_1_top") addLog("poller1-transactional", `Kafka Event Publish SUCCESS : ${eventId}`, "SUCCESS");
+    else if (poller == "Poller_2_top") addLog("poller2-transactional", `Kafka Event Publish SUCCESS : ${eventId}`, "SUCCESS");
+    else if (poller == "Poller_1_ltu") addLog("poller1-listen", `Kafka Event Publish SUCCESS : ${eventId}`, "SUCCESS");
+    else if (poller == "Poller_2_ltu") addLog("poller2-listen", `Kafka Event Publish SUCCESS : ${eventId}`, "SUCCESS");
     setBatchStats((prev) => ({ ...prev, kafkaPublishesSucceeded: prev.kafkaPublishesSucceeded + 1 }));
   }, []);
 
-  const handleKafkaFailure = useCallback(({ poller, data }) => {
-    if (poller == "Poller_1_top") addLog("poller1-transactional", `Kafka Event Publish FAILURE : ${data.id}`, "FAILURE");
-    else if (poller == "Poller_2_top") addLog("poller2-transactional", `Kafka Event Publish FAILURE : ${data.id}`, "FAILURE");
-    else if (poller == "Poller_1_ltu") addLog("poller1-listen", `Kafka Event Publish FAILURE : ${data.id}`, "FAILURE");
-    else if (poller == "Poller_2_ltu") addLog("poller2-listen", `Kafka Event Publish FAILURE : ${data.id}`, "FAILURE");
+  const handleKafkaFailure = useCallback(({ poller, data } = {}) => {
+    const eventId = data?.id ?? "unknown";
+    if (poller == "Poller_1_top") addLog("poller1-transactional", `Kafka Event Publish FAILURE : ${eventId}`, "FAILURE");
+    else if (poller == "Poller_2_top") addLog("poller2-transactional", `Kafka Event Publish FAILURE : ${eventId}`, "FAILURE");
+    else if (poller == "Poller_1_ltu") addLog("poller1-listen", `Kafka Event Publish FAILURE : ${eventId}`, "FAILURE");
+    else if (poller == "Poller_2_ltu") addLog("poller2-listen", `Kafka Event Publish FAILURE : ${eventId}`, "FAILURE");
     setBatchStats((prev) => ({ ...prev, kafkaPublishesFailed: prev.kafkaPublishesFailed + 1 }));
   }, []);
 
@@ -133,9 +135,13 @@ export default function App() {
   const handle_Consumed = useCallback(({ topic }) => {
     setBatchStats((prev) => ({
       ...prev,
+      kafkaPublishesSucceeded:
+        topic === TAILING_TOPIC
+          ? prev.kafkaPublishesSucceeded + 1
+          : prev.kafkaPublishesSucceeded,
       consumer_consumed: prev.consumer_consumed + 1,
       relayPending:
-        topic !== "Orders_3___Transactional_Log_Tailing"
+        topic !== TAILING_TOPIC
           ? prev.relayPending - 1
           : prev.relayPending,
     }));
@@ -288,7 +294,7 @@ export default function App() {
   const handleSendOrders = async (e) => {
     e.preventDefault();
     if (!formData.customerName || !formData.productName) return;
-    if (addOrder(formData)) {
+    if (await addOrder(formData)) {
       setBatchStats((prev) => ({
         ...prev,
         totalRequests: prev.totalRequests + formData.batchSize,

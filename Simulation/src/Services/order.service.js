@@ -60,7 +60,7 @@ export const deleteOrders = async ()=>{
 
     } catch (error) {
         toast.error('Error Deleting Orders');
-      console.error(`Network error on order ${i + 1}:`, error);
+      console.error('Network error while deleting orders:', error);
     }
 };
 
@@ -81,7 +81,7 @@ export const deleteOutbox = async ()=>{
 
     } catch (error) {
         toast.error('Error Deleting Orders');
-      console.error(`Network error on order ${i + 1}:`, error);
+      console.error('Network error while deleting outbox data:', error);
     }
 };
 
@@ -115,6 +115,7 @@ export const getOutbox = async () => {
   catch (error) 
   {
     toast.error('Error Fetching Outbox Data');
+    console.error('Network error while fetching outbox:', error);
   }
 };
 
